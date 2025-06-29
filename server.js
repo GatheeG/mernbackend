@@ -3,51 +3,39 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 
-const app = express();
-
-app.use(express.json());
-app.use(morgan('common'));
-app.use(cors());
-
-// db.js
 const connectDB = require('./db');
-
-// Dummy Data
-/* const { workouts } = require('./data');
-const Workout = require('./models/Workout'); */
-
-// Routes
 const workoutsRouter = require('./routes/workouts');
 const authRouter = require('./routes/user');
 
-const port = process.env.PORT || 5000;
+const app = express();
 
 // Middleware
+app.use(express.json());
+app.use(morgan('dev'));
+app.use(cors());
+
+// API Routes
 app.use('/api/workouts', workoutsRouter);
-app.use("/api/auth", authRouter);
+app.use('/api/auth', authRouter);
 
-
-app.use((req,res)=>{
-    res.send("API is running");
-})
-
-
-// Default Route
+// Default route for testing
 app.get('/', (req, res) => {
-    res.json({ message: 'Welcome to the app' });
-})
+    res.send('✅ API is running...');
+});
 
-// Start Server function
+// Start server
+const port = process.env.PORT || 5000;
+
 const startServer = async () => {
     try {
         await connectDB();
         app.listen(port, () => {
-            console.log(`Server listening on port ${port}`);
+            console.log(`🚀 Server running on port ${port}`);
         });
-        /* await Workout.insertMany(workouts); */
     } catch (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`❌ Error: ${error.message}`);
         process.exit(1);
     }
 };
+
 startServer();
